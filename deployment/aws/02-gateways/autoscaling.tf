@@ -23,14 +23,7 @@ data "appgate_site" "default_site" {
   site_name = "Default site"
 }
 
-data "template_file" "user_data" {
-  template = file("${path.module}/userdata.tpl")
-  vars = {
-    site_id        = data.appgate_site.default_site.id
-    pem            = data.appgate_certificate_authority.ca.certificate
-    controller_dns = var.controller_dns
-  }
-}
+
 
 # The appliance gateway will be used as a template for all the other auto-scaled gateways.
 resource "appgate_appliance" "template_gateway" {
@@ -67,7 +60,6 @@ resource "appgate_appliance" "template_gateway" {
     }
   }
 
-
   admin_interface {
     hostname = "aws-gateway-template.devops"
     https_ciphers = [
@@ -78,15 +70,12 @@ resource "appgate_appliance" "template_gateway" {
 
   tags = [
     "terraform",
-    "api-created"
+    "api-created",
+    "autoscaled"
   ]
-  notes = "hello world"
+  notes = "Autoscaled gateway, defined in terraform."
   site  = data.appgate_site.default_site.id
-
-
   networking {
-
-
     nics {
       enabled = true
       name    = "eth0"
@@ -99,9 +88,7 @@ resource "appgate_appliance" "template_gateway" {
         }
       }
     }
-
   }
-
   # https://sdphelp.appgate.com/adminguide/v5.1/about-appliances.html?anchor=gateway-a
   gateway {
     enabled = true
@@ -113,31 +100,30 @@ resource "appgate_appliance" "template_gateway" {
       }
     }
   }
-
 }
 
-
+data "template_file" "user_data" {
+  template = file("${path.module}/userdata.tpl")
+  vars = {
+    site_id        = data.appgate_site.default_site.id
+    pem            = data.appgate_certificate_authority.ca.certificate
+    controller_dns = var.controller_dns
+  }
+}
 
 module "autoscaling" {
-  source  = "terraform-aws-modules/autoscaling/aws"
-  version = "3.8.0"
-
-  name = "dln-gateway-with-ec2"
-
-  create_lc = true
-  lc_name   = "dln-lc"
-  # create_lc            = false
-  # launch_configuration = aws_launch_configuration.appgate_gateway_lc.name
-
-  image_id                     = data.aws_ami.appgate.id
+  source                       = "terraform-aws-modules/autoscaling/aws"
+  version                      = "3.8.0"
+  name                         = "appgate-gateway"
+  create_lc                    = true
+  lc_name                      = "appgate-tf-lc"
+  image_id                     = var.appgate_ami
   instance_type                = "m4.large"
-  security_groups              = [data.aws_security_group.appgate_security_group.id]
+  security_groups              = [var.security_group]
   associate_public_ip_address  = true
   recreate_asg_when_lc_changes = true
-
-  key_name = "deployer-key"
-
-  user_data_base64 = base64encode(data.template_file.user_data.rendered)
+  key_name                     = var.aws_key_pair_name
+  user_data_base64             = base64encode(data.template_file.user_data.rendered)
 
   ebs_block_device = [
     {
@@ -157,37 +143,13 @@ module "autoscaling" {
   ]
 
   # Auto scaling group
-  asg_name                  = "dln-example-asg"
-  vpc_zone_identifier       = [data.aws_subnet.appgate_appliance_subnet.id]
+  asg_name                  = "appgate-asg"
+  vpc_zone_identifier       = [var.subnet_id]
   health_check_type         = "EC2"
-  min_size                  = 0
-  max_size                  = 1
-  desired_capacity          = 1
+  min_size                  = 1
+  max_size                  = 3
+  desired_capacity          = 2
   wait_for_capacity_timeout = 0
-  # service_linked_role_arn   = aws_iam_service_linked_role.autoscaling.arn
 
-  tags = [
-    {
-      key                 = "Environment"
-      value               = "dev"
-      propagate_at_launch = true
-    },
-    {
-      key                 = "Project"
-      value               = "megasecret"
-      propagate_at_launch = true
-    },
-    {
-      key                 = "foo"
-      value               = ""
-      propagate_at_launch = true
-    },
-    {
-      key                 = "bar"
-      value               = ""
-      propagate_at_launch = true
-    }
-  ]
-
-  tags_as_map = local.common_tags
+  tags_as_map = var.common_tags
 }

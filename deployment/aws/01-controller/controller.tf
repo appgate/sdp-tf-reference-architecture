@@ -1,18 +1,15 @@
+provider "aws" {
+  region = var.aws_region
+}
 
 
 resource "aws_instance" "appgate_controller" {
-  ami = data.aws_ami.appgate.id
+  ami = var.appgate_ami
   # https://sdphelp.cyxtera.com/adminguide/v5.0/instance-sizing.html
-  instance_type = var.controller_instance_type
-
-  subnet_id = aws_subnet.appgate_appliance_subnet.id
-  vpc_security_group_ids = [
-    aws_security_group.appgate_security_group.id
-  ]
-
-  key_name = aws_key_pair.deployer.key_name
-
-
+  instance_type               = var.controller_instance_type
+  subnet_id                   = var.subnet_id
+  vpc_security_group_ids      = [var.security_group]
+  key_name                    = var.aws_key_pair_name
   associate_public_ip_address = true
 
 
@@ -21,13 +18,11 @@ resource "aws_instance" "appgate_controller" {
     volume_size = 50
   }
 
-
   ebs_block_device {
     volume_type = "gp2"
     volume_size = 20
     device_name = "/dev/xvdb"
   }
-
 
   connection {
     type        = "ssh"
@@ -37,8 +32,6 @@ resource "aws_instance" "appgate_controller" {
     host        = aws_instance.appgate_controller.public_ip
   }
 
-
-
   # https://sdphelp.cyxtera.com/adminguide/v5.0/appliance-installation.html
   provisioner "remote-exec" {
     inline = [
@@ -47,8 +40,7 @@ resource "aws_instance" "appgate_controller" {
     ]
   }
 
-
-  tags = merge(local.common_tags, {
+  tags = merge(var.common_tags, {
     Name = "controller-appgate"
   })
 }
