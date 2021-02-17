@@ -9,12 +9,24 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "appgate_ami" {
+  default = ""
+}
+variable "subnet_id" {
+  default = ""
+}
+variable "security_group" {
+  default = ""
+}
+variable "aws_key_pair_name" {
+  default = ""
+}
 
 locals {
   service_name = "appgate"
   owner        = "dln"
 
-  # Common tags to be assigned to all resources
+  # Common tags to be assigned to all aws resources
   common_tags = {
     Service = local.service_name
     Owner   = local.owner
@@ -22,24 +34,10 @@ locals {
 }
 
 variable "gateway_instance_type" {
-  description = "aws instance size for the Controller. See https://sdphelp.cyxtera.com/adminguide/v5.0/instance-sizing.html"
+  description = "aws instance size for the Controller. See https://sdphelp.appgate.com/adminguide/v5.3/instance-sizing.html"
   default     = "m4.xlarge"
 }
 variable "controller_instance_type" {
-  description = "aws instance size for the Controller. See https://sdphelp.cyxtera.com/adminguide/v5.0/instance-sizing.html"
+  description = "aws instance size for the Controller. See https://sdphelp.appgate.com/adminguide/v5.3/instance-sizing.html"
   default     = "m4.xlarge"
-}
-
-variable "vpc_id" {
-  description = "VPC used for appgate."
-  default     = "vpc-1e9b5879"
-}
-
-variable "appliance_cidr_block" {
-  description = "The network addresses used for appliances."
-  default     = "10.0.242.0/24"
-  # default     = "172.31.252.0/24" # stockholm
-}
-variable "internet_gateway_id" {
-  default = "igw-e2dfaa86"
 }

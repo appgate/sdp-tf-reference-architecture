@@ -1,9 +1,9 @@
 provider_installation {
   filesystem_mirror {
     path    = "/home/dln/.terraform.d/plugins"
-    include = ["example.com/*/*"]
+    include = ["appgate.com/*/*"]
   }
   direct {
-    exclude = ["example.com/*/*"]
+    exclude = ["appgate.com/*/*"]
   }
 }
