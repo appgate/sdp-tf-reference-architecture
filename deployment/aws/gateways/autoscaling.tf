@@ -11,7 +11,7 @@ provider "aws" {
 provider "appgate" {
   username = "admin"
   password = "admin"
-  url      = "https://${var.controller_dns}:444/admin"
+  url      = "https://${var.controller_dns}:8443/admin"
   provider = "local"
   insecure = true
 }

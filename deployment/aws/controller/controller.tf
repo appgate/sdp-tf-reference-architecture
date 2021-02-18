@@ -51,10 +51,15 @@ resource "aws_instance" "appgate_controller" {
   }
 
   # https://sdphelp.appgate.com/adminguide/v5.3/appliance-installation.html
+  provisioner "file" {
+    source      = "${path.module}/provision_controller.sh"
+    destination = "/tmp/provision_controller.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
-      # https://sdphelp.appgate.com/adminguide/v5.3/new-appliance.html?anchor=manual-seeding
-      "cz-seed --output /home/cz/seed.json --password cz cz --dhcp-ipv4 eth0 --enable-logserver --no-registration --hostname ${self.public_dns}"
+      "chmod +x /tmp/provision_controller.sh",
+      "/tmp/provision_controller.sh",
     ]
   }
 
