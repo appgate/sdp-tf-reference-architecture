@@ -29,12 +29,9 @@ export TF_CLI_CONFIG_FILE=$PWD/dev.tfrc
 
 ```
 terraform plan \
-    -target=aws_route_table.appgate_route_table \
-    -target=aws_route_table_association.appgate_route_table_assoication \
     -target=module.controller \
     -var 'private_key=/home/dln/.ssh/paswordless' \
-    -var 'public_key=/home/dln/.ssh/paswordless.pub' \
-    -var 'aws_region=us-east-1'
+    -var 'public_key=/home/dln/.ssh/paswordless.pub'
 
 ```
 
