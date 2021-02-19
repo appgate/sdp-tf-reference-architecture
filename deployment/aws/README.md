@@ -1,5 +1,10 @@
+# Auto-Scaling Appgate Gateways on aws
+
+This directory contains example how to setup and provision appgate controller and gateways.
+
 ## Requirements
 - [Terraform](https://www.terraform.io/downloads.html) >= v0.14.5
+- [terraform-provider-appgate](https://github.com/appgate/sdp-terraform-provider/releases) >= v0.3.3
 
 ## Configuration
 Since we have not yet published the appgate terraform provider to registry.terraform.io we need to manually install it and use local version of appgate provider.
@@ -30,8 +35,7 @@ export TF_CLI_CONFIG_FILE=$PWD/dev.tfrc
 ```
 terraform plan \
     -target=module.controller \
-    -var 'private_key=/home/dln/.ssh/paswordless' \
-    -var 'public_key=/home/dln/.ssh/paswordless.pub'
+    -tfvars=YourConfigVariables.tfvars
 
 ```
 
