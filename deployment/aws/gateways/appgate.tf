@@ -33,17 +33,49 @@ resource "appgate_administrative_role" "test_administrative_role" {
   name = "tf-autoscale-gateway-role"
   tags = local.appgate_tags
   privileges {
-    type         = "All"
+    type   = "View"
+    target = "Appliance"
+    scope {
+      tags = local.appgate_tags
+    }
+  }
+  privileges {
+    type   = "Delete"
+    target = "Appliance"
+    scope {
+      tags = local.appgate_tags
+    }
+  }
+  privileges {
+    type   = "Export"
+    target = "Appliance"
+    scope {
+      tags = local.appgate_tags
+    }
+  }
+  privileges {
+    type         = "Create"
     target       = "Appliance"
-    default_tags = ["terraform"]
+    default_tags = local.appgate_tags
+  }
+  privileges {
+    type   = "View"
+    target = "Site"
+    scope {
+      tags = local.appgate_tags
+    }
   }
 }
 
 data "appgate_identity_provider" "local_identity_provider" {
-    # builtin resource
-    identity_provider_name = "local"
+  # builtin resource
+  identity_provider_name = "local"
 }
+
 # The local user that we will use during autoscaling of the gateway(s).
+# Warning: The following is only an example. Never check sensitive values like
+# usernames and passwords into source control.
+# https://learn.hashicorp.com/tutorials/terraform/sensitive-variables
 resource "appgate_local_user" "gateway_api_user" {
   name     = "gateway_autoscale"
   password = "aws_appgate"
@@ -62,7 +94,7 @@ resource "appgate_policy" "api_gw_user_policy" {
   administrative_roles = [
     appgate_administrative_role.test_administrative_role.id
   ]
-    expression = <<-EOF
+  expression = <<-EOF
 var result = false;
 /*claims.user.ag.identityProviderId*/
 if(claims.user.ag && claims.user.ag.identityProviderId === "${data.appgate_identity_provider.local_identity_provider.id}"){
