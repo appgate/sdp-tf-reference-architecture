@@ -28,7 +28,7 @@ module "autoscaling" {
   ]
   associate_public_ip_address  = true
   recreate_asg_when_lc_changes = true
-  key_name                     = var.aws_key_pair_name != "" ? var.aws_key_pair_name : "deployer-key"
+  key_name                     = var.aws_key_pair_name != "" ? var.aws_key_pair_name : "appgate-demo-deployer-key"
 
   user_data_base64 = base64encode(data.template_file.user_data.rendered)
 
