@@ -61,9 +61,6 @@ resource "appgate_administrative_role" "test_administrative_role" {
   privileges {
     type   = "View"
     target = "Site"
-    scope {
-      tags = local.appgate_tags
-    }
   }
 }
 

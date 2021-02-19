@@ -13,19 +13,10 @@ resource "aws_security_group" "appgate_security_group" {
 
   # Allow all protocols
   ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-
-    cidr_blocks = [
-      var.appliance_cidr_block,
-      "212.16.176.132/32",
-      "62.63.239.36/32"
-    ]
-    ipv6_cidr_blocks = [
-      "2a01:2b0:302c::/48"
-    ]
-
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = concat(var.ingress_cidr_blocks, [var.appliance_cidr_block])
   }
 
   ingress {
@@ -71,7 +62,7 @@ resource "aws_route_table" "appgate_route_table" {
 
 
 resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
+  key_name   = "appgate-demo-deployer-key"
   public_key = file(var.public_key)
   tags       = var.common_tags
 }

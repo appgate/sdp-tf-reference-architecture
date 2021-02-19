@@ -10,22 +10,26 @@ module "controller" {
   subnet_id                = var.subnet_id
   security_group           = var.security_group
   aws_key_pair_name        = var.aws_key_pair_name
+  internet_gateway_id      = var.internet_gateway_id
+  vpc_id                   = var.vpc_id
+  appliance_cidr_block     = var.appliance_cidr_block
+  ingress_cidr_blocks      = var.ingress_cidr_blocks
   common_tags              = local.common_tags
 }
 
 # Gateway module creates the appgate gateways in an aws autoscaling group.
 # Thse userdata includes step to join and leave the collective. 
-module "gateways" {
-  source                = "./gateways"
-  controller_dns        = module.controller.controller_dns
-  aws_region            = var.aws_region
-  gateway_instance_type = var.gateway_instance_type
-  appgate_ami           = var.appgate_ami
-  security_group        = var.security_group
-  common_tags           = local.common_tags
-  subnet_id             = var.subnet_id
-  aws_key_pair_name     = var.aws_key_pair_name
-}
+# module "gateways" {
+#   source                = "./gateways"
+#   controller_dns        = module.controller.controller_dns
+#   aws_region            = var.aws_region
+#   gateway_instance_type = var.gateway_instance_type
+#   appgate_ami           = var.appgate_ami
+#   security_group        = var.security_group
+#   common_tags           = local.common_tags
+#   subnet_id             = var.subnet_id
+#   aws_key_pair_name     = var.aws_key_pair_name
+# }
 
 
 output "controller_ui" {

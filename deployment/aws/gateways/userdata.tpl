@@ -11,14 +11,14 @@ USERNAME=${api_username}
 # in this example, we will use aws secret manager to retreive the password and use hardcoded value of username to $USERNAME.
 
 # Install the latest AWS cli
-sed -i -e 's/^#deb/deb/' /etc/apt/sources.list  # apt sources are now commented out by default
-apt-get update
-apt-get install --yes python3-pip
-pip3 install --user --upgrade awscli
+# sed -i -e 's/^#deb/deb/' /etc/apt/sources.list  # apt sources are now commented out by default
+# apt-get update
+# apt-get install --yes python3-pip
+# pip3 install --user --upgrade awscli
 
 # get the aws secret with awscli
 # TODO Create aws sts for temporary credentials so we can read the password from aws secret manager.
-# cat >/tmp/password-executable-2 <<EOL
+# cat >/tmp/password-executable<<EOL
 # #!/usr/bin/python3
 # import json
 # import shlex
@@ -31,9 +31,10 @@ pip3 install --user --upgrade awscli
 
 
 # Example with hardcoded password. the expected format for password-executable.
+# the password is the same as 'appgate_local_user.gateway_api_user.password'
 cat >/tmp/password-executable<<EOL
 #!/bin/sh
-echo '{"password": "admin"}'
+echo '{"password": "aws_appgate"}'
 EOL
 
 
@@ -44,7 +45,7 @@ chmod +x /tmp/password-executable
 # Upscale!
 /usr/share/admin-scripts/appgate-autoscale.py upscale \
     ${controller_dns} \
-    --port 444 \
+    --port 8443 \
     --cacert /tmp/cacert.pem \
     --username $USERNAME \
     --site ${site_id} \
@@ -58,7 +59,7 @@ cat >/var/cache/cz-scripts/shutdown-script<<EOL
 #!/bin/sh
 /usr/share/admin-scripts/appgate-autoscale.py downscale \
     ${controller_dns} \
-    --port 444 \
+    --port 8443 \
     --cacert /tmp/cacert.pem \
     --username $USERNAME \
     --password-path /tmp/password-executable

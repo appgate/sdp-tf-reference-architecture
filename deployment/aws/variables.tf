@@ -41,3 +41,7 @@ variable "controller_instance_type" {
   description = "aws instance size for the Controller. See https://sdphelp.appgate.com/adminguide/v5.3/instance-sizing.html"
   default     = "m4.xlarge"
 }
+variable "internet_gateway_id" {}
+variable "vpc_id" {}
+variable "appliance_cidr_block" {}
+variable "ingress_cidr_blocks" {}
