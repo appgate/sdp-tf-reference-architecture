@@ -2,46 +2,16 @@ provider "aws" {
   region = var.aws_region
 }
 
-data "aws_ami" "appgate" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["AppGate-SDP-5.3.2-Paid-d039c81b-2ac0-4798-98c7-afcf6226c4f7-ami-0fef14b943f691703.4"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["aws-marketplace"]
-}
-locals {
-  controller_user_data = <<-EOF
-#!/bin/bash
-PUBLIC_HOSTNAME=`curl --silent http://169.254.169.254/latest/meta-data/public-hostname`
-# seed the first controller, and enable admin interface on :8443
-cz-seed \
-    --password cz cz \
-    --dhcp-ipv4 eth0 \
-    --enable-logserver \
-    --no-registration \
-    --hostname "$PUBLIC_HOSTNAME" \
-    | jq '.remote.adminInterface.hostname = .remote.peerInterface.hostname | .remote.adminInterface.allowSources = .remote.peerInterface.allowSources' >> /home/cz/seed.json
-
-EOF
-}
 resource "aws_instance" "appgate_controller" {
-  ami = var.appgate_ami != "" ? var.appgate_ami : data.aws_ami.appgate.id
+  ami = var.appgate_ami != "" ? var.appgate_ami : data.aws_ami.appgate_ami.id
 
   # https://sdphelp.appgate.com/adminguide/v5.3/instance-sizing.html
   instance_type = var.controller_instance_type
-  subnet_id     = var.subnet_id != "" ? var.subnet_id : aws_subnet.appgate_appliance_subnet.id
+  subnet_id     = var.subnet_id == "" ? aws_subnet.appgate_appliance_subnet[0].id : var.subnet_id
   vpc_security_group_ids = [
-    var.security_group != "" ? var.security_group : aws_security_group.appgate_security_group.id
+    var.security_group == "" ? aws_security_group.appgate_security_group[0].id : var.security_group
   ]
-  key_name                    = var.aws_key_pair_name != "" ? var.aws_key_pair_name : aws_key_pair.deployer.key_name
+  key_name                    = var.aws_key_pair_name == "" ? aws_key_pair.deployer[0].key_name : var.aws_key_pair_name
   associate_public_ip_address = true
 
 
