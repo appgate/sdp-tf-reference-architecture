@@ -26,14 +26,6 @@ resource "aws_instance" "appgate_controller" {
     device_name = "/dev/xvdb"
   }
 
-  connection {
-    type        = "ssh"
-    user        = "cz"
-    timeout     = "25m"
-    private_key = file(var.private_key)
-    host        = aws_instance.appgate_controller.public_ip
-  }
-
   # https://sdphelp.appgate.com/adminguide/v5.3/appliance-installation.html
   user_data_base64 = base64encode(local.controller_user_data)
 

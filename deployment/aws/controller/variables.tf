@@ -78,3 +78,9 @@ variable "appgate_version" {
     error_message = "ERROR must be a semantic version (string)."
   }
 }
+
+variable "admin_login_password" {
+  type = string
+  default = "admin"
+  sensitive = true
+}

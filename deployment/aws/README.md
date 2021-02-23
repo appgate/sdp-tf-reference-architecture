@@ -45,3 +45,8 @@ Apply the rest of the resources once the controller is up and runnning.
 ```
 terraform apply -auto-approve
 ```
+
+
+## Initial Setup
+
+Default Admin UI login is `admin`/`admin`. You should change this immediately.

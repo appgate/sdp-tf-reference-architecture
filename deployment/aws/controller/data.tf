@@ -40,7 +40,7 @@ cz-seed \
     --enable-logserver \
     --no-registration \
     --hostname "$PUBLIC_HOSTNAME" \
+    --admin-password ${var.admin_login_password} \
     | jq '.remote.adminInterface.hostname = .remote.peerInterface.hostname | .remote.adminInterface.allowSources = .remote.peerInterface.allowSources' >> /home/cz/seed.json
-
 EOF
 }
