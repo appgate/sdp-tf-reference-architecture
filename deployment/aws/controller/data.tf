@@ -8,13 +8,13 @@ data "aws_ami" "appgate_ami" {
 
   # Product Codes
   # BYOL      2t5itl5x43ar3tljs7s2mu3rw
-  # Licensed  2oiadaeqo2k6kdw1pgflzxkfd
+  # Licensed  cbse92jrh5o5yi82s7eub483b
 
   filter {
     name = "product-code"
     values = [lower(var.licensing_type) == "byol" ?
       "2t5itl5x43ar3tljs7s2mu3rw" : # byol
-      "2oiadaeqo2k6kdw1pgflzxkfd"   # licensed
+      "cbse92jrh5o5yi82s7eub483b"   # licensed
     ]
   }
 
