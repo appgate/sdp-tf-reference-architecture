@@ -1,18 +1,18 @@
 
 variable "aws_region" {}
 variable "appgate_ami" {
-  type = string
+  type        = string
   description = "Prefer to ignore: Consider using the appgate_version + licensing_type parameters to locate your AMI. Only specify if you want to override AMI looking."
-  default = ""
+  default     = ""
 }
 variable "subnet_id" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "if blank, will create a security group"
 }
 variable "security_group" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "if blank, will create a security group"
 }
 variable "controller_instance_type" {
@@ -32,19 +32,19 @@ variable "controller_instance_type" {
 }
 
 variable "private_key" {
-  type = string
+  type        = string
   description = "location of the private key you want to use to administer"
 }
 variable "public_key" {
-  type = string
+  type        = string
   description = "location of the public key"
 }
 variable "aws_key_pair_name" {
-  default = ""
+  default     = ""
   description = "public key to set on ASG instances. If one does not previously exist, leave blank and fill in var.public_key"
 }
 variable "common_tags" {
-  type = map
+  type    = map(any)
   default = {}
 }
 
@@ -53,7 +53,7 @@ variable "common_tags" {
 variable "vpc_id" {}
 variable "appliance_cidr_block" {}
 variable "ingress_cidr_blocks" {
-  type = list
+  type = list(any)
 }
 variable "internet_gateway_id" {}
 
@@ -80,7 +80,7 @@ variable "appgate_version" {
 }
 
 variable "admin_login_password" {
-  type = string
-  default = "admin"
+  type      = string
+  default   = "admin"
   sensitive = true
 }
