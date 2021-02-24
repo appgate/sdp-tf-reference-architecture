@@ -1,0 +1,14 @@
+name: terraform-lint
+
+on: [push, pull_request]
+
+jobs:
+  check_format:
+    runs-on: ubuntu-latest
+    name: Check terraform file are formatted correctly
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: terraform-lint-with-diff
+      uses: alexnorell/terraform-lint@v1.0.0
+
