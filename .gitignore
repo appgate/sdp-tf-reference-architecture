@@ -2,4 +2,5 @@ terraform.tfstate*
 .terraform
 crash.log
 .terraform.lock.hcl
-appgate.tfvars
+*auto.tfvars
+.plan
