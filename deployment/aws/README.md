@@ -24,7 +24,7 @@ export TF_CLI_CONFIG_FILE=$PWD/dev.tfrc
 │     └── appgate-sdp
 │        └── 0.3.5
 │           └── linux_amd64
-│              └── terraform-provider-appgate
+│              └── terraform-provider-appgate-sdp
 
 ```
 
