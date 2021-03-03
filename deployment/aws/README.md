@@ -4,7 +4,7 @@ This directory contains example how to setup and provision appgate controller an
 
 ## Requirements
 - [Terraform](https://www.terraform.io/downloads.html) >= v0.14.5
-- [terraform-provider-appgate](https://github.com/appgate/sdp-terraform-provider/releases) >= v0.3.3
+- [terraform-provider-appgate](https://github.com/appgate/sdp-terraform-provider/releases) >= v0.3.5
 
 ## Configuration
 Since we have not yet published the appgate terraform provider to registry.terraform.io we need to manually install it and use local version of appgate provider.
@@ -21,8 +21,8 @@ export TF_CLI_CONFIG_FILE=$PWD/dev.tfrc
 ~/.terraform.d/plugins
 ├── appgate.com
 │  └── appgate
-│     └── appgate
-│        └── 0.3.2
+│     └── appgate-sdp
+│        └── 0.3.5
 │           └── linux_amd64
 │              └── terraform-provider-appgate
 

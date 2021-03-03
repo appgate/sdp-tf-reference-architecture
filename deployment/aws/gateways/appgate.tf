@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     appgate = {
-      source = "appgate.com/appgate/appgate"
+      source = "appgate.com/appgate/appgate-sdp"
     }
   }
 }
