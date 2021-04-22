@@ -56,12 +56,12 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
 data "template_file" "user_data" {
   template = file("${path.module}/userdata.tpl")
   vars = {
-    site_id        = data.appgate_site.default_site.id
-    pem            = data.appgate_certificate_authority.ca.certificate
+    site_id        = data.appgatesdp_site.default_site.id
+    pem            = data.appgatesdp_certificate_authority.ca.certificate
     controller_dns = var.controller_dns
     aws_region     = var.aws_region
     aws_secret_arn = aws_secretsmanager_secret_version.appgate_api_password.arn
-    api_username   = appgate_local_user.gateway_api_user.name
+    api_username   = appgatesdp_local_user.gateway_api_user.name
   }
 }
 

@@ -1,7 +1,8 @@
 terraform {
   required_providers {
-    appgate = {
-      source = "appgate.com/appgate/appgate-sdp"
+    appgatesdp = {
+      source  = "appgate/appgatesdp"
+      version = "0.5.0"
     }
   }
 }
@@ -13,7 +14,7 @@ locals {
   ]
 }
 
-provider "appgate" {
+provider "appgatesdp" {
   username = "admin"
   password = "admin"
   url      = "https://${var.controller_dns}:8443/admin"
@@ -21,15 +22,15 @@ provider "appgate" {
   insecure = true
 }
 
-data "appgate_certificate_authority" "ca" {
+data "appgatesdp_certificate_authority" "ca" {
   pem = true
 }
 
-data "appgate_site" "default_site" {
+data "appgatesdp_site" "default_site" {
   site_name = "Default site"
 }
 
-resource "appgate_administrative_role" "test_administrative_role" {
+resource "appgatesdp_administrative_role" "test_administrative_role" {
   name = "tf-autoscale-gateway-role"
   tags = local.appgate_tags
   privileges {
@@ -63,13 +64,13 @@ resource "appgate_administrative_role" "test_administrative_role" {
     target = "Site"
     scope {
       ids = [
-        data.appgate_site.default_site.id
+        data.appgatesdp_site.default_site.id
       ]
     }
   }
 }
 
-data "appgate_identity_provider" "local_identity_provider" {
+data "appgatesdp_identity_provider" "local_identity_provider" {
   # builtin resource
   identity_provider_name = "local"
 }
@@ -78,7 +79,7 @@ data "appgate_identity_provider" "local_identity_provider" {
 # Warning: The following is only an example. Never check sensitive values like
 # usernames and passwords into source control.
 # https://learn.hashicorp.com/tutorials/terraform/sensitive-variables
-resource "appgate_local_user" "gateway_api_user" {
+resource "appgatesdp_local_user" "gateway_api_user" {
   name     = "gateway_autoscale"
   password = "aws_appgate"
 
@@ -93,35 +94,35 @@ resource "appgate_local_user" "gateway_api_user" {
 # usernames and passwords into source control.
 # https://learn.hashicorp.com/tutorials/terraform/sensitive-variables
 resource "aws_secretsmanager_secret" "appgate_api_credentials" {
-  name        = "appgate-api-credentials-2"
+  name        = "appgate-api-credentials-3"
   description = "Appgate API credentials. Used by autoscaled gateways."
   tags        = var.common_tags
 }
 
 resource "aws_secretsmanager_secret_version" "appgate_api_password" {
   secret_id     = aws_secretsmanager_secret.appgate_api_credentials.id
-  secret_string = appgate_local_user.gateway_api_user.password
+  secret_string = appgatesdp_local_user.gateway_api_user.password
 }
 
 
-resource "appgate_policy" "api_gw_user_policy" {
+resource "appgatesdp_policy" "api_gw_user_policy" {
   name     = "gateway api user policy"
   notes    = "Policy for gateway api user, used during autoscaling."
   tags     = local.appgate_tags
   disabled = false
   administrative_roles = [
-    appgate_administrative_role.test_administrative_role.id
+    appgatesdp_administrative_role.test_administrative_role.id
   ]
   expression = <<-EOF
 var result = false;
 /*claims.user.ag.identityProviderId*/
-if(claims.user.ag && claims.user.ag.identityProviderId === "${data.appgate_identity_provider.local_identity_provider.id}"){
+if(claims.user.ag && claims.user.ag.identityProviderId === "${data.appgatesdp_identity_provider.local_identity_provider.id}"){
      result = true;
 } else {
      return false; 
 }
 /*claims.user.username*/
-if(claims.user.username === "${appgate_local_user.gateway_api_user.name}") { 
+if(claims.user.username === "${appgatesdp_local_user.gateway_api_user.name}") { 
     result = true; 
 } else { 
     return false; 
@@ -133,7 +134,7 @@ EOF
 
 
 # The appliance gateway will be used as a template for all the other auto-scaled gateways.
-resource "appgate_appliance" "template_gateway" {
+resource "appgatesdp_appliance" "template_gateway" {
   name     = replace("aws-gateway-template.devops", ".", "_")
   hostname = "aws-gateway-template.devops"
 
@@ -177,7 +178,7 @@ resource "appgate_appliance" "template_gateway" {
 
   tags  = local.appgate_tags
   notes = "Autoscaled gateway, defined in terraform."
-  site  = data.appgate_site.default_site.id
+  site  = data.appgatesdp_site.default_site.id
   networking {
     nics {
       enabled = true
