@@ -1,10 +1,10 @@
-# Auto-Scaling Appgate Gateways on aws
+# Auto-Scaling Appgate SDP Gateways on aws
 
-This directory contains example how to setup and provision appgate controller and gateways.
+This directory contains example how to setup and provision appgate sdp controller and gateways.
 
 ## Requirements
 - [Terraform](https://www.terraform.io/downloads.html) >= v0.14.5
-- [terraform-provider-appgate](https://github.com/appgate/sdp-terraform-provider/releases) >= v0.5.0
+- [terraform-provider-appgatesdp](https://github.com/appgate/terraform-provider-appgatesdp/releases) >= v0.5.0
 
 
 
