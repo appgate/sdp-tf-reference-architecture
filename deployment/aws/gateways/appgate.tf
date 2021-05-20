@@ -119,13 +119,13 @@ var result = false;
 if(claims.user.ag && claims.user.ag.identityProviderId === "${data.appgatesdp_identity_provider.local_identity_provider.id}"){
      result = true;
 } else {
-     return false; 
+     return false;
 }
 /*claims.user.username*/
-if(claims.user.username === "${appgatesdp_local_user.gateway_api_user.name}") { 
-    result = true; 
-} else { 
-    return false; 
+if(claims.user.username === "${appgatesdp_local_user.gateway_api_user.name}") {
+    result = true;
+} else {
+    return false;
 }
 return result;
 EOF
@@ -176,7 +176,7 @@ resource "appgatesdp_appliance" "template_gateway" {
     ]
   }
 
-  tags  = local.appgate_tags
+  tags  = concat(local.appgate_tags, ["template"])
   notes = "Autoscaled gateway, defined in terraform."
   site  = data.appgatesdp_site.default_site.id
   networking {
