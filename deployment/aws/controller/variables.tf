@@ -69,7 +69,7 @@ variable "licensing_type" {
 
 variable "appgate_version" {
   type        = string
-  default     = "5.3.2" # latest
+  default     = "5.4.1" # latest
   description = "semantic version of the version of appgate you want to install. will search for an AMI matching this semver"
   validation {
     # Regex for valid semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
