@@ -1,6 +1,6 @@
 data "aws_ami" "appgate_ami" {
-  owners = ["679593333241"] # Appgate
-
+  owners      = ["679593333241"] # Appgate
+  most_recent = true
   filter {
     name   = "name"
     values = ["*${var.appgate_version}*"]
@@ -32,15 +32,18 @@ data "aws_ami" "appgate_ami" {
 locals {
   controller_user_data = <<-EOF
 #!/bin/bash
-PUBLIC_HOSTNAME=`curl --silent http://169.254.169.254/latest/meta-data/public-hostname`
-# seed the first controller, and enable admin interface on :8443
+TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` 
+PUBLIC_HOSTNAME=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/public-hostname`
+
+# Initiate the first controller with cz-seed to setup basic network configuration
+# TODO change the default CLI login from cz / cz to your own.
 cz-seed \
     --password cz cz \
     --dhcp-ipv4 eth0 \
     --enable-logserver \
     --no-registration \
     --hostname "$PUBLIC_HOSTNAME" \
-    --admin-password ${var.admin_login_password} \
-    | jq '.remote.adminInterface.hostname = .remote.peerInterface.hostname | .remote.adminInterface.allowSources = .remote.peerInterface.allowSources' >> /home/cz/seed.json
+    --admin-hostname "$PUBLIC_HOSTNAME" \
+    --admin-password ${var.admin_login_password}  >> /home/cz/seed.json
 EOF
 }

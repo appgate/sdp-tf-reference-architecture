@@ -5,7 +5,7 @@ provider "aws" {
 resource "aws_instance" "appgate_controller" {
   ami = var.appgate_ami != "" ? var.appgate_ami : data.aws_ami.appgate_ami.id
 
-  # https://sdphelp.appgate.com/adminguide/v5.3/instance-sizing.html
+  # https://sdphelp.appgate.com/adminguide/v5.4/instance-sizing.html
   instance_type = var.controller_instance_type
   subnet_id     = var.subnet_id == "" ? aws_subnet.appgate_appliance_subnet[0].id : var.subnet_id
   vpc_security_group_ids = [
@@ -26,7 +26,7 @@ resource "aws_instance" "appgate_controller" {
     device_name = "/dev/xvdb"
   }
 
-  # https://sdphelp.appgate.com/adminguide/v5.3/appliance-installation.html
+  # https://sdphelp.appgate.com/adminguide/v5.4/appliance-installation.html
   user_data_base64 = base64encode(local.controller_user_data)
 
   tags = merge(var.common_tags, {

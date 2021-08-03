@@ -72,7 +72,7 @@ module "autoscaling" {
   create_lc            = true
   lc_name              = "appgate-tf-lc"
   iam_instance_profile = aws_iam_instance_profile.gateway_profile.id
-  image_id             = var.appgate_ami != "" ? var.appgate_ami : data.aws_ami.appgate.id
+  image_id             = var.appgate_ami != "" ? var.appgate_ami : data.aws_ami.appgate_ami.id
   instance_type        = "m4.large"
   security_groups = [
     var.security_group != "" ? var.security_group : data.aws_security_group.appgate_security_group.id
