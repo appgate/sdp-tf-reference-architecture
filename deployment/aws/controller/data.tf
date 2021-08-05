@@ -32,7 +32,7 @@ data "aws_ami" "appgate_ami" {
 locals {
   controller_user_data = <<-EOF
 #!/bin/bash
-TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` 
+TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
 PUBLIC_HOSTNAME=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN"  http://169.254.169.254/latest/meta-data/public-hostname`
 
 # Initiate the first controller with cz-seed to setup basic network configuration
@@ -41,7 +41,6 @@ cz-seed \
     --password cz cz \
     --dhcp-ipv4 eth0 \
     --enable-logserver \
-    --no-registration \
     --hostname "$PUBLIC_HOSTNAME" \
     --admin-hostname "$PUBLIC_HOSTNAME" \
     --admin-password ${var.admin_login_password}  >> /home/cz/seed.json

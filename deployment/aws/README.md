@@ -28,4 +28,4 @@ terraform apply -auto-approve
 
 ## Initial Setup
 
-Default Admin UI login is `admin`/`admin`. You should change this immediately.
+Default Admin UI login is `admin`/`adminadmin`. You should change this immediately.

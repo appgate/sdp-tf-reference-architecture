@@ -19,7 +19,7 @@ variable "controller_instance_type" {
   default     = "t2.small"
   type        = string
   description = "Size of instance to deploy. Vendor recommends c5.xlarge"
-  # options: 
+  # options:
   # t2/3. micro, medium, large
   # c4/5. xlarge, 2xlarge, 4xlarge
   # c5.large
@@ -81,6 +81,6 @@ variable "appgate_version" {
 
 variable "admin_login_password" {
   type      = string
-  default   = "admin"
+  default   = "adminadmin"
   sensitive = true
 }
