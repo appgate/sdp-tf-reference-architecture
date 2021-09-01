@@ -54,6 +54,9 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
 }
 
 data "template_file" "user_data" {
+  depends_on = [
+    appgatesdp_policy.api_gw_user_policy
+  ]
   template = file("${path.module}/userdata.tpl")
   vars = {
     site_id        = data.appgatesdp_site.default_site.id
@@ -66,6 +69,9 @@ data "template_file" "user_data" {
 }
 
 module "autoscaling" {
+  depends_on = [
+    appgatesdp_policy.api_gw_user_policy
+  ]
   source               = "terraform-aws-modules/autoscaling/aws"
   version              = "3.8.0"
   name                 = "appgate-gateway"
@@ -75,7 +81,8 @@ module "autoscaling" {
   image_id             = var.appgate_ami != "" ? var.appgate_ami : data.aws_ami.appgate_ami.id
   instance_type        = "m4.large"
   security_groups = [
-    var.security_group != "" ? var.security_group : data.aws_security_group.appgate_security_group.id
+    # var.security_group != "" ? var.security_group : data.aws_security_group.appgate_security_group.id
+    var.security_group
   ]
   associate_public_ip_address  = true
   recreate_asg_when_lc_changes = true
@@ -103,7 +110,8 @@ module "autoscaling" {
   # Auto scaling group
   asg_name = "appgate-asg"
   vpc_zone_identifier = [
-    var.subnet_id != "" ? var.subnet_id : data.aws_subnet.appgate_appliance_subnet.id
+    # var.subnet_id != "" ? var.subnet_id : data.aws_subnet.appgate_appliance_subnet.id
+    var.subnet_id
   ]
   health_check_type         = "EC2"
   min_size                  = 1

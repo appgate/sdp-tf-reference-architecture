@@ -1,4 +1,7 @@
 variable "gateway_instance_type" {}
+variable "appgate_config_file" {
+  sensitive = true
+}
 
 variable "controller_dns" {}
 variable "aws_region" {}

@@ -32,5 +32,21 @@ resource "aws_instance" "appgate_controller" {
   tags = merge(var.common_tags, {
     Name = "controller-appgate"
   })
+
+  connection {
+    type        = "ssh"
+    user        = "cz"
+    timeout     = "25m"
+    private_key = file(var.private_key)
+    host        = aws_instance.appgate_controller.public_ip
+  }
+  provisioner "remote-exec" {
+    inline = [
+      # Just keep provisioning the instance until the controller comes online;
+      # once the controller response on the web request, we will asume the controller is online
+      # alternative we could do "sudo cz-config status | jq -r .status" but that requires sudo privileges
+      "while true; do curl --connect-timeout 5 --silent --fail -LI --insecure https://0.0.0.0:8443/ui -o /dev/null && exit 0; done"
+    ]
+  }
 }
 

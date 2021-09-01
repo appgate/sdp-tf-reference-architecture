@@ -15,18 +15,20 @@ locals {
 }
 
 provider "appgatesdp" {
-  username = "admin"
-  password = "admin"
-  url      = "https://${var.controller_dns}:8443/admin"
-  provider = "local"
-  insecure = true
+  config_path = var.appgate_config_file
 }
 
 data "appgatesdp_certificate_authority" "ca" {
+  depends_on = [
+    appgatesdp_policy.api_gw_user_policy
+  ]
   pem = true
 }
 
 data "appgatesdp_site" "default_site" {
+  depends_on = [
+    aws_secretsmanager_secret.appgate_api_credentials,
+  ]
   site_name = "Default site"
 }
 
@@ -73,6 +75,9 @@ resource "appgatesdp_administrative_role" "test_administrative_role" {
 data "appgatesdp_identity_provider" "local_identity_provider" {
   # builtin resource
   identity_provider_name = "local"
+  depends_on = [
+    data.appgatesdp_site.default_site
+  ]
 }
 
 # The local user that we will use during autoscaling of the gateway(s).
@@ -80,6 +85,9 @@ data "appgatesdp_identity_provider" "local_identity_provider" {
 # usernames and passwords into source control.
 # https://learn.hashicorp.com/tutorials/terraform/sensitive-variables
 resource "appgatesdp_local_user" "gateway_api_user" {
+  depends_on = [
+    aws_secretsmanager_secret.appgate_api_credentials
+  ]
   name     = "gateway_autoscale"
   password = "aws_appgate"
 
@@ -94,18 +102,28 @@ resource "appgatesdp_local_user" "gateway_api_user" {
 # usernames and passwords into source control.
 # https://learn.hashicorp.com/tutorials/terraform/sensitive-variables
 resource "aws_secretsmanager_secret" "appgate_api_credentials" {
-  name        = "appgate-api-credentials-3"
+  name        = "appgate-api-credentials-5"
   description = "Appgate API credentials. Used by autoscaled gateways."
   tags        = var.common_tags
 }
 
 resource "aws_secretsmanager_secret_version" "appgate_api_password" {
+  depends_on = [
+    aws_secretsmanager_secret.appgate_api_credentials
+  ]
+
   secret_id     = aws_secretsmanager_secret.appgate_api_credentials.id
   secret_string = appgatesdp_local_user.gateway_api_user.password
 }
 
 
 resource "appgatesdp_policy" "api_gw_user_policy" {
+  depends_on = [
+    appgatesdp_local_user.gateway_api_user,
+    appgatesdp_administrative_role.test_administrative_role,
+    appgatesdp_appliance.template_gateway,
+    appgatesdp_policy.api_gw_user_policy,
+  ]
   name     = "gateway api user policy"
   notes    = "Policy for gateway api user, used during autoscaling."
   tags     = local.appgate_tags
@@ -135,6 +153,13 @@ EOF
 
 # The appliance gateway will be used as a template for all the other auto-scaled gateways.
 resource "appgatesdp_appliance" "template_gateway" {
+  depends_on = [
+    data.appgatesdp_site.default_site
+  ]
+  timeouts {
+    create = "60m"
+
+  }
   name     = replace("aws-gateway-template.devops", ".", "_")
   hostname = "aws-gateway-template.devops"
 
