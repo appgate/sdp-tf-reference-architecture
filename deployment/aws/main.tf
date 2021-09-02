@@ -13,6 +13,7 @@ module "controller" {
   appliance_cidr_block     = var.appliance_cidr_block
   ingress_cidr_blocks      = var.ingress_cidr_blocks
   common_tags              = local.common_tags
+  admin_login_password     = var.admin_login_password
 }
 
 resource "local_file" "appgateconfig" {
@@ -22,7 +23,7 @@ resource "local_file" "appgateconfig" {
   sensitive_content = jsonencode({
     "appgate_url"            = format("https://%s:8443/admin", module.controller.controller_dns)
     "appgate_username"       = "admin"
-    "appgate_password"       = "adminadmin"
+    "appgate_password"       = var.admin_login_password
     "appgate_provider"       = "local"
     "appgate_client_version" = 15
     "appgate_insecure"       = true
@@ -33,16 +34,17 @@ resource "local_file" "appgateconfig" {
 # Gateway module creates the appgate gateways in an aws autoscaling group.
 # Thse userdata includes step to join and leave the collective.
 module "gateways" {
-  source                = "./gateways"
-  appgate_config_file   = local_file.appgateconfig.filename
-  controller_dns        = module.controller.controller_dns
-  aws_region            = var.aws_region
-  gateway_instance_type = var.gateway_instance_type
-  appgate_ami           = var.appgate_ami
-  security_group        = var.security_group
-  common_tags           = local.common_tags
-  subnet_id             = var.subnet_id
-  aws_key_pair_name     = module.controller.key_name
+  source                     = "./gateways"
+  appgate_config_file        = local_file.appgateconfig.filename
+  controller_dns             = module.controller.controller_dns
+  aws_region                 = var.aws_region
+  gateway_instance_type      = var.gateway_instance_type
+  appgate_ami                = var.appgate_ami
+  security_group             = var.security_group
+  common_tags                = local.common_tags
+  controller_subnet          = module.controller.controller_subnet
+  aws_key_pair_name          = module.controller.key_name
+  controller_security_groups = module.controller.controller_security_groups
 }
 
 
