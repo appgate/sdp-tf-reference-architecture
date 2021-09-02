@@ -69,3 +69,10 @@ variable "internet_gateway_id" {}
 variable "vpc_id" {}
 variable "appliance_cidr_block" {}
 variable "ingress_cidr_blocks" {}
+
+
+variable "admin_login_password" {
+  type      = string
+  default   = "adminadmin"
+  sensitive = true
+}

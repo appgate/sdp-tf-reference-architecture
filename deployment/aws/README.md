@@ -4,25 +4,35 @@ This directory contains example how to setup and provision appgate sdp controlle
 
 ## Requirements
 - [Terraform](https://www.terraform.io/downloads.html) >= v0.14.5
-- [terraform-provider-appgatesdp](https://github.com/appgate/terraform-provider-appgatesdp/releases) >= v0.5.0
+- [terraform-provider-appgatesdp](https://github.com/appgate/terraform-provider-appgatesdp/releases) >= v0.6.6
 
 
 
 ### 1. Create the controller
 
 
+```bash
+# we just create an empty config file at first, this file will
+# be automatically populated by the controller module.
+echo "{}" >> appgateprovider.config.json
+terraform init
+terraform apply -var-file auto.tfvars -auto-approve
 ```
-terraform plan \
-    -target=module.controller \
-    -tfvars=YourConfigVariables.tfvars
 
-```
+example auto.tfvars
 
+```hcl
+private_key          = "/path/to/ssh/key/passwordless_rsa"
+public_key           = "/path/to/ssh/key/passwordless_rsa.pub"
+appliance_cidr_block = "______/24"
 
-## 2. Apply the gateway autoscale module
-Apply the rest of the resources once the controller is up and runnning.
-```
-terraform apply -auto-approve
+ingress_cidr_blocks = [
+  "__your_IP__/32",
+]
+
+internet_gateway_id = "igw-_____"
+vpc_id = "vpc-____"
+
 ```
 
 
