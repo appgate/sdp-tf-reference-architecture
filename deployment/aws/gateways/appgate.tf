@@ -97,12 +97,21 @@ resource "appgatesdp_local_user" "gateway_api_user" {
   tags       = local.appgate_tags
 }
 
+
+# we will use a random name for the secret manager
+# to avoid error creating Secrets Manager Secret: InvalidRequestException: You can't create this secret because a secret with this name is already scheduled for deletion.
+resource "random_pet" "secret_name" {}
+resource "random_integer" "secret_name_number" {
+  min = 1
+  max = 50
+}
+
 # this is just for demo purpose. to store API credentials to we use for autoscaling in the gateways userdata.
 # Warning: The following is only an example. Never check sensitive values like
 # usernames and passwords into source control.
 # https://learn.hashicorp.com/tutorials/terraform/sensitive-variables
 resource "aws_secretsmanager_secret" "appgate_api_credentials" {
-  name        = "appgate-api-credentials-5"
+  name        = format("%s-%d", random_pet.secret_name.id, random_integer.secret_name_number.id)
   description = "Appgate API credentials. Used by autoscaled gateways."
   tags        = var.common_tags
 }

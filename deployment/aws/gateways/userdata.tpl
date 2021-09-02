@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo ${pem} | base64 -d > /tmp/cacert.pem 
+echo ${pem} | base64 -d > /tmp/cacert.pem
 
 # USERNAME for the api credentials to the controller.
 USERNAME=${api_username}
@@ -9,12 +9,6 @@ USERNAME=${api_username}
 # gateway to the controller.
 #
 # in this example, we will use aws secret manager to retreive the password and use hardcoded value of username to $USERNAME.
-
-# Install the latest AWS cli
-sed -i -e 's/^#deb/deb/' /etc/apt/sources.list  # apt sources are now commented out by default
-apt-get update
-apt-get install --yes python3-pip
-pip3 install --user --upgrade awscli
 
 # get the aws secret with awscli
 # credentials for aws cli is provision by the ec2 asumed roles.

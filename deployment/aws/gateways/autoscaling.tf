@@ -6,11 +6,12 @@ provider "aws" {
 resource "aws_iam_instance_profile" "gateway_profile" {
   name = "appgate_gw_autoscaling"
   role = aws_iam_role.gateway_role.name
+  # tags = var.common_tags
 }
 
 
 resource "aws_iam_role" "gateway_role" {
-  name               = "appgate_gateway_role2"
+  name               = "appgate_gateway_role"
   tags               = var.common_tags
   assume_role_policy = <<EOF
 {
@@ -30,9 +31,9 @@ EOF
 }
 
 resource "aws_iam_policy" "gateway_policy" {
-  name        = "test-policy"
-  description = "A test policy"
-
+  name        = "secret-policy"
+  description = "A secret policy"
+  # tags        = var.common_tags
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -68,33 +69,48 @@ data "template_file" "user_data" {
   }
 }
 
+
 module "autoscaling" {
   depends_on = [
-    appgatesdp_policy.api_gw_user_policy
+    data.template_file.user_data,
+    aws_iam_instance_profile.gateway_profile
   ]
-  source               = "terraform-aws-modules/autoscaling/aws"
-  version              = "3.8.0"
-  name                 = "appgate-gateway"
-  create_lc            = true
-  lc_name              = "appgate-tf-lc"
-  iam_instance_profile = aws_iam_instance_profile.gateway_profile.id
-  image_id             = var.appgate_ami != "" ? var.appgate_ami : data.aws_ami.appgate_ami.id
-  instance_type        = "m4.large"
-  security_groups = [
-    # var.security_group != "" ? var.security_group : data.aws_security_group.appgate_security_group.id
-    var.security_group
-  ]
-  associate_public_ip_address  = true
-  recreate_asg_when_lc_changes = true
-  key_name                     = var.aws_key_pair_name != "" ? var.aws_key_pair_name : "appgate-demo-deployer-key"
+  source  = "terraform-aws-modules/autoscaling/aws"
+  version = "~> 4.0"
 
-  user_data_base64 = base64encode(data.template_file.user_data.rendered)
+  lc_name   = "appgate-tf-lc"
+  use_lc    = true
+  create_lc = true
+
+  # Autoscaling group
+  name            = "appgate-gateways"
+  use_name_prefix = false
+  # iam_instance_profile_arn  = aws_iam_instance_profile.gateway_profile.arn
+  iam_instance_profile_name = aws_iam_instance_profile.gateway_profile.id
+  min_size                  = 1
+  max_size                  = 3
+  desired_capacity          = 2
+  wait_for_capacity_timeout = 0
+  health_check_type         = "EC2"
+  vpc_zone_identifier = [
+    var.controller_subnet
+  ]
+  security_groups             = var.controller_security_groups
+  key_name                    = var.aws_key_pair_name != "" ? var.aws_key_pair_name : "appgate-demo-deployer-key"
+  user_data_base64            = base64encode(data.template_file.user_data.rendered)
+  associate_public_ip_address = true
+
+
+  image_id          = var.appgate_ami != "" ? var.appgate_ami : data.aws_ami.appgate_ami.id
+  instance_type     = "m4.large"
+  ebs_optimized     = true
+  enable_monitoring = true
 
   ebs_block_device = [
     {
-      device_name           = "/dev/xvdz"
+      device_name           = "/dev/xvdb"
       volume_type           = "gp2"
-      volume_size           = "50"
+      volume_size           = "20"
       delete_on_termination = true
     },
   ]
@@ -107,17 +123,19 @@ module "autoscaling" {
     },
   ]
 
-  # Auto scaling group
-  asg_name = "appgate-asg"
-  vpc_zone_identifier = [
-    # var.subnet_id != "" ? var.subnet_id : data.aws_subnet.appgate_appliance_subnet.id
-    var.subnet_id
+
+  tags = [
+    {
+      key                 = "Environment"
+      value               = "dev"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "Project"
+      value               = "appgate"
+      propagate_at_launch = true
+    },
   ]
-  health_check_type         = "EC2"
-  min_size                  = 1
-  max_size                  = 3
-  desired_capacity          = 2
-  wait_for_capacity_timeout = 0
 
   tags_as_map = var.common_tags
 }

@@ -29,11 +29,3 @@ data "aws_ami" "appgate_ami" {
   }
 }
 
-# data "aws_security_group" "appgate_security_group" {
-#   tags = var.common_tags
-# }
-
-
-# data "aws_subnet" "appgate_appliance_subnet" {
-#   tags = var.common_tags
-# }
