@@ -31,8 +31,6 @@ resource "local_file" "appgateconfig" {
   filename = "./appgateprovider.config.json"
 }
 
-# Gateway module creates the appgate gateways in an aws autoscaling group.
-# Thse userdata includes step to join and leave the collective.
 module "gateways" {
   source                     = "./gateways"
   appgate_config_file        = local_file.appgateconfig.filename
@@ -45,9 +43,4 @@ module "gateways" {
   controller_subnet          = module.controller.controller_subnet
   aws_key_pair_name          = module.controller.key_name
   controller_security_groups = module.controller.controller_security_groups
-}
-
-
-output "controller_ui" {
-  value = format("https://%s:8443", module.controller.controller_dns)
 }
