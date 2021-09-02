@@ -227,6 +227,19 @@ resource "appgatesdp_appliance" "template_gateway" {
       }
     }
   }
+  ssh_server {
+    enabled                 = true
+    port                    = 22
+    password_authentication = true
+    allow_sources {
+      address = "0.0.0.0"
+      netmask = 0
+    }
+    allow_sources {
+      address = "::"
+      netmask = 0
+    }
+  }
   # https://sdphelp.appgate.com/adminguide/v5.1/about-appliances.html?anchor=gateway-a
   gateway {
     enabled = true
