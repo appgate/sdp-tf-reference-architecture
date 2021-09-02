@@ -11,7 +11,9 @@ This directory contains example how to setup and provision appgate sdp controlle
 ### 1. Create the controller
 
 
-```
+```bash
+# we just create an empty config file at first, this file will
+# be automatically populated by the controller module.
 echo "{}" >> appgateprovider.config.json
 terraform init
 terraform apply -var-file auto.tfvars -auto-approve
