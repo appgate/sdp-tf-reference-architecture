@@ -2,7 +2,7 @@ terraform {
   required_providers {
     appgatesdp = {
       source  = "appgate/appgatesdp"
-      version = "0.6.6"
+      version = "0.6.9"
     }
   }
 }
@@ -165,10 +165,7 @@ resource "appgatesdp_appliance" "template_gateway" {
   depends_on = [
     data.appgatesdp_site.default_site
   ]
-  timeouts {
-    create = "60m"
 
-  }
   name     = replace("aws-gateway-template.devops", ".", "_")
   hostname = "aws-gateway-template.devops"
 
