@@ -68,6 +68,6 @@ resource "aws_instance" "first_controller" {
     ]
   }
   provisioner "local-exec" {
-    command = "check_status=true; while($check_status); do status=$(curl -X POST -k -s -o /dev/null -I -w %%{http_code} https://${aws_instance.first_controller.public_dns}:8443/admin/login); if [[ \"$status\" -ne 406 ]]; then check_status=true; sleep 3; else check_status=false; fi; done; sleep 20"
+    command = "check_status=true; while($check_status); do status=$(curl -X POST -k -s -o /dev/null -I -w %%{http_code} https://${aws_instance.first_controller.public_dns}:8443/admin/login); if [[ \"$status\" -ne 406 ]]; then check_status=true; sleep 3; else check_status=false; fi; done; sleep 60"
   }
 }

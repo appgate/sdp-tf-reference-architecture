@@ -145,7 +145,7 @@ resource "null_resource" "seed_controller" {
     inline = [
       "cat seed.b64 | base64 -d  | jq .  >> seed.json",
       // wait for the seed to get picked up and initialized
-      "sleep 20",
+      "sleep 120",
       "echo OK",
     ]
   }
