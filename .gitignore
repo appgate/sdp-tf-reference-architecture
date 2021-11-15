@@ -4,3 +4,5 @@ crash.log
 .terraform.lock.hcl
 *auto.tfvars
 .plan
+*.b64
+*.svg
