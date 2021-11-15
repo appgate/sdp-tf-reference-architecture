@@ -32,8 +32,9 @@ resource "appgatesdp_appliance" "second_controller" {
     ignore_changes = [
       # The following attributes will be defined and configured within
       # appgatesdp_appliance_controller_activation.activate_second_controller
-      admin_interface,
-      controller,
+      controller[0],
+      admin_interface[0],
+
     ]
   }
 
