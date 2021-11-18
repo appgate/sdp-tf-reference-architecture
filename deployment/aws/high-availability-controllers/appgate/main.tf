@@ -1,9 +1,8 @@
 terraform {
-  required_version = ">= 0.12"
   required_providers {
     appgatesdp = {
-      source  = "appgate.com/appgate/appgatesdp"
-      version = "0.8.1"
+      source  = "appgate/appgatesdp"
+      version = "0.8.2"
     }
   }
 }
