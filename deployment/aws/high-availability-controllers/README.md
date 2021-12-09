@@ -8,10 +8,10 @@ This directory contains example how to setup and provision appgate sdp with mult
 
 
 
-## stucture
+## structure
 
 This directory includes 2 modules, the first module, `aws` create the first controller and basic aws routing.
-The second directory, `appgate` creates the second aws_instance and the assoicated appgatesdp resources.
+The second directory, `appgate` creates the second aws_instance and the associated appgatesdp resources.
 
 
 ```bash
