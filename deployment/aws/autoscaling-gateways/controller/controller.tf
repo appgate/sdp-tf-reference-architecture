@@ -43,7 +43,7 @@ resource "aws_instance" "appgate_controller" {
   provisioner "remote-exec" {
     inline = [
       # Just keep provisioning the instance until the controller comes online;
-      # once the controller response on the web request, we will asume the controller is online
+      # once the controller response on the web request, we will assume the controller is online
       # alternative we could do "sudo cz-config status | jq -r .status" but that requires sudo privileges
       "while true; do curl --connect-timeout 5 --silent --fail -LI --insecure https://0.0.0.0:8443/ui -o /dev/null && exit 0; done"
     ]

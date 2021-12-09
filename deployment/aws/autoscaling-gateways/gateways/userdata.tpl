@@ -8,10 +8,10 @@ USERNAME=${api_username}
 # we need to provision the api credentials to be able to register the newly created
 # gateway to the controller.
 #
-# in this example, we will use aws secret manager to retreive the password and use hardcoded value of username to $USERNAME.
+# in this example, we will use aws secret manager to retrieve the password and use hardcoded value of username to $USERNAME.
 
 # get the aws secret with awscli
-# credentials for aws cli is provision by the ec2 asumed roles.
+# credentials for aws cli is provision by the ec2 assumed roles.
 cat >/tmp/password-executable<<EOL
 #!/usr/bin/python3
 import json
@@ -48,7 +48,7 @@ EOL
 chmod +x /tmp/password-executable
 
 
-# appgate.autiscale.py register the new gateway to the collective.
+# appgate.autoscale.py register the new gateway to the collective.
 /usr/share/admin-scripts/appgate-autoscale.py upscale \
     ${controller_dns} \
     --port 8443 \
